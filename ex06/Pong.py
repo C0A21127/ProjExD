@@ -57,7 +57,8 @@ def calc_score(ball_x, score1, score2):
         score1 += 1
     return score1, score2
     
-
+#セットの計算
+#望月
 def calc_set(score1, score2, set1, set2):
     if score1 == 2:
         score1 = 0
@@ -116,7 +117,8 @@ def main():
     background = back.convert()
     '''screen.fill((0,0,0))'''
 
-    #背景色（ランダムのつもりに設定）
+    #背景色（ランダムに設定）
+    #森屋
     color1 = random.randint(0,124)
     color2 = random.randint(0,124)
     color3 = random.randint(0,124)
@@ -162,7 +164,7 @@ def main():
 
         # 得点の計算
         score1, score2 = calc_score(ball_x, score1, score2)
-        
+        #スコアの計算
         score1, score2, set1, set2 = calc_set(score1, score2, set1, set2)
        
 
