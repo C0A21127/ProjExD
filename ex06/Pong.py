@@ -4,7 +4,8 @@ import sys
 import random
 
 # ボールの動きを計算
-def calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y):
+def calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y,wall_x, wall_y, wall_1, ball_1):
+        global flag
         if ball_x <= bar1_x + 10.:
             if ball_y >= bar1_y - 7.5 and ball_y <= bar1_y + 42.5:
                 ball_x = 20.
@@ -13,6 +14,15 @@ def calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y):
             if ball_y >= bar2_y - 7.5 and ball_y <= bar2_y + 42.5:
                 ball_x = 605.
                 ball_vx = -ball_vx
+
+         #障害物の右側にあたった時
+        if wall_1.colliderect(ball_1) and not flag:
+            ball_vx=-ball_vx
+            flag = True
+
+        if not wall_1.colliderect(ball_1):
+            flag = False
+
         if ball_x < 5.:
             ball_x, ball_y = 320., 232.5
         elif ball_x > 620.:
@@ -48,6 +58,16 @@ def calc_player(bar1_y, bar1_dy):
     if bar1_y >= 420.: bar1_y = 420.
     elif bar1_y <= 10. : bar1_y = 10.
     return bar1_y
+
+#障害物の動き
+def wall_mov(wall_x,wall_y,wall_vx,wall_vy):
+    if wall_y <= 25.:
+        wall_vy = -wall_vy
+        wall_y = 25.
+    elif wall_y >= 410.5:
+        wall_vy = -wall_vy
+        wall_y = 410.5
+    return wall_x, wall_y, wall_vx, wall_vy
 
 # 得点の計算
 def calc_score(ball_x, score1, score2):
@@ -94,15 +114,18 @@ def event(bar1_dy):
     return bar1_dy
 
 def main():
+    global flag
     # 各パラメータ
     bar1_x, bar1_y = 10. , 215.
     bar2_x, bar2_y = 620., 215.
+    wall_x, wall_y = 325,215.
     ball_x, ball_y = 307.5, 232.5
     bar1_dy, bar2_dy = 0. , 0.
     ball_vx, ball_vy = 250., 250.
+    wall_vx, wall_vy = 250., 250.
     score1, score2 = 0,0
-    set1, set2 = 0, 0
     ball_r = 7
+    flag = False
 
     # pygameの設定
     pygame.init()                                       # Pygameの初期化
@@ -136,14 +159,22 @@ def main():
     ball = circ_sur
     ball.set_colorkey((0,0,0))
 
+    
+    #障害物の設定
+    wall_s = pygame.Surface((10,90))
+    wall = wall_s.convert()
+    wall.fill((255,255,255))
+
+
     while (1):
         # 各オブジェクトの描画
-        screen.blit(background,(0,0))
+        scr = screen.blit(background,(0,0))
         screen.fill((color1, color2, color3)) #背景色をランダムに設定
         pygame.draw.aaline(screen,(255,255,255),(330,5),(330,475))  # 中央線の描画
-        screen.blit(bar1,(bar1_x,bar1_y))                           # プレイヤー側バーの描画
-        screen.blit(bar2,(bar2_x,bar2_y))                           # CPU側バーの描画
-        screen.blit(ball,(ball_x, ball_y))                          # ボールの描画
+        bar_1 = screen.blit(bar1,(bar1_x,bar1_y))                           # プレイヤー側バーの描画
+        bar_2 = screen.blit(bar2,(bar2_x,bar2_y))                           # CPU側バーの描画
+        wall_1 = screen.blit(wall,(wall_x,wall_y))
+        ball_1 = screen.blit(ball,(ball_x, ball_y))                          # ボールの描画
         screen.blit(font.render(str(score1), True,(255,255,255)),(250.,50.))
         screen.blit(font.render(str(score2), True,(255,255,255)),(400.,50.))
         screen.blit(font.render(str(set1), True,(255,255,0)),(250.,10.))
@@ -171,7 +202,8 @@ def main():
         bar2_y = calc_ai(ball_x, ball_y, bar2_x, bar2_y)
 
         # ボールの速度・位置を計算
-        ball_x, ball_y, ball_vx, ball_vy = calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y)
+        ball_x, ball_y, ball_vx, ball_vy = calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y,wall_x,wall_y,wall_1,ball_1)
+        wall_x, wall_y, wall_vx, wall_vy = wall_mov(wall_x,wall_y,wall_vx,wall_vy)
         pygame.display.update()                                     # 画面を更新
 
 
