@@ -5,11 +5,10 @@ from pygame.locals import *
 import sys
 
 # ボールの動きを計算
-def calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y,wall_x,wall_y,wall_1,ball_1):
+
+def calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y,wall_x, wall_y, wall_1, ball_1):
         global flag
-        #プレイヤーのバーにあたった時
-        # wall_rct=wall_1.get_rect()
-        # ball_rct=ball_1.get_rect()
+
         if ball_x <= bar1_x + 10.:
             if ball_y >= bar1_y - 7.5 and ball_y <= bar1_y + 42.5:
                 ball_x = 20.
@@ -19,15 +18,18 @@ def calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y,w
             if ball_y >= bar2_y - 7.5 and ball_y <= bar2_y + 42.5:
                 ball_x = 605.
                 ball_vx = -ball_vx
-        #障害物にあたった時
+
+
+         #障害物の右側にあたった時
+        
         if wall_1.colliderect(ball_1) and not flag:
             ball_vx=-ball_vx
             flag = True
         if not wall_1.colliderect(ball_1):
             flag = False
-
         
         #画面外に出たとき
+
         if ball_x < 5.:
             ball_x, ball_y = 320., 232.5
         elif ball_x > 620.:
@@ -66,12 +68,14 @@ def calc_player(bar1_y, bar1_dy):
 
 #障害物の動き
 def wall_mov(wall_x,wall_y,wall_vx,wall_vy):
+
     if wall_y <= 15.:
         wall_vy = -wall_vy
         wall_y = 15.
     elif wall_y >= 400.5:
         wall_vy = -wall_vy
         wall_y = 400.5
+
     return wall_x, wall_y, wall_vx, wall_vy
 
 # 得点の計算
@@ -144,19 +148,26 @@ def main():
     # 各パラメータ
     bar1_x, bar1_y = 10. , 215.
     bar2_x, bar2_y = 620., 215.
-    wall_x,wall_y=325,215.
+
+    wall_x, wall_y = 325,215.
+
+  
     ball_x, ball_y = 307.5, 232.5
     bar1_dy, bar2_dy = 0. , 0.
     ball_vx, ball_vy = 250., 250.
     wall_vx, wall_vy = 250., 250.
     score1, score2 = 0,0
     ball_r = 7
+
+    flag = False
+
     ct_cir_xy = [(256, 7),
                  (236, 7),
                  (387, 7),
                  (407, 7)
                  ]
     seta, setb = 0, len(ct_cir_xy) // 2
+
 
     # pygameの設定
     pygame.init()                                       # Pygameの初期化
@@ -191,6 +202,9 @@ def main():
     ball = circ_sur
     ball.set_colorkey((0,0,0))
 
+
+    
+
     #セットカウント
     circle_lst = []
     circle_frame_lst = []
@@ -204,10 +218,13 @@ def main():
         circle = ct_sur
         circle.set_colorkey((0,0,0))
         circle_lst.append(circle)
+
     #障害物の設定
     wall_s = pygame.Surface((10,90))
     wall = wall_s.convert()
     wall.fill((255,255,255))
+
+
 
     while (1):
         # 各オブジェクトの描画
@@ -224,6 +241,7 @@ def main():
         for i in range(4):                                          #セットカウントの表示
             screen.blit(circle_lst[i], ct_cir_xy[i])                #中身の描画
             screen.blit(circle_frame_lst[i], ct_cir_xy[i])          #枠の白丸の描画
+
 
 
         # プレイヤー側バーの位置
