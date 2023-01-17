@@ -8,6 +8,7 @@ import random
 # ボールの動きを計算
 def calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y,wall_x,wall_y,wall_1,ball_1):
         global flag
+        
         #プレイヤーのバーにあたった時
         # wall_rct=wall_1.get_rect()
         # ball_rct=ball_1.get_rect()
@@ -20,7 +21,10 @@ def calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y,w
             if ball_y >= bar2_y - 7.5 and ball_y <= bar2_y + 42.5:
                 ball_x = 605.
                 ball_vx = -ball_vx
+
+        
         #障害物にあたった時
+        #C0A21023 大家海世,C0A21013 石川裕人
         if wall_1.colliderect(ball_1) and not flag:
             ball_vx=-ball_vx
             flag = True
@@ -66,6 +70,7 @@ def calc_player(bar1_y, bar1_dy):
     return bar1_y
 
 #障害物の動き
+#C0A21023 大家海世,C0A21013 石川裕人
 def wall_mov(wall_x,wall_y,wall_vx,wall_vy):
     if wall_y <= 15.:
         wall_vy = -wall_vy
@@ -85,24 +90,27 @@ def calc_score(ball_x, score1, score2, set1, set2, cir_lst, cir_xy, scr):
         set1, set2 = change_color(score1, score2, set1, set2, cir_lst, cir_xy, scr)
         score1, score2 = 0, 0
     return score1, score2, set1, set2
-    
 
+#セット数の計算と３セット取ったら終了する   
+#C0A21125 望月　佑樹
 def calc_set(score1, score2, set1, set2):
-    if score1 == 5:
-        score1 = 0
-        score2 = 0
-        set1 += 1
-        if set1 == 3:
-            sys.exit()
-    if score2 == 5:
-        score1 = 0
-        score2 = 0
-        set2 += 1
-        if set2 == 3:
-            sys.exit()
+    if score1 == 5:                         #プレイヤーが５点取ったら
+        score1 = 0                          #プレイヤーの点数を0にする
+        score2 = 0                          #コンピュータの点数を0にする
+        set1 += 1                           #プレイヤーのセット数に1加える
+        if set1 == 3:                       #プレイヤーが3セット取ったら
+            sys.exit()                      #ゲームを終了させる
+    if score2 == 5:                         #コンピュータが5点取ったら
+        score1 = 0                          #プレイヤーの点数を0にする
+        score2 = 0                          #コンピュータの点数を0にする
+        set2 += 1                           #コンピュータのセット数に1を加える
+        if set2 == 3:                       #コンピュータが3セット取ったら
+            sys.exit()                      #ゲームを終了させる。
     return score1, score2, set1, set2
 
-def change_color(score1, score2, set1, set2, cir_lst, cir_xy, scr):         #セット取得時の色変化
+#セット取得時の色変化
+#C0A21009 荒谷愛翔
+def change_color(score1, score2, set1, set2, cir_lst, cir_xy, scr):         
     if score1 == 5:
         ct_sur = pygame.Surface((20,20))                                    
         pygame.draw.circle(ct_sur, (0, 0, 255), (10, 10), 4)                #プレイヤーの色を青に変化
@@ -191,6 +199,7 @@ def main():
     ball.set_colorkey((0,0,0))
 
     #セットカウント
+    #C0A21009 荒谷愛翔
     circle_lst = []
     circle_frame_lst = []
     for i in range(4):                                              #枠線と中身の初期設定
@@ -203,7 +212,9 @@ def main():
         circle = ct_sur
         circle.set_colorkey((0,0,0))
         circle_lst.append(circle)
+        
     #障害物の設定
+    #C0A21023 大家海世 , C0A21013 石川裕人
     wall_s = pygame.Surface((10,90))
     wall = wall_s.convert()
     wall.fill((255,255,255))
@@ -247,6 +258,9 @@ def main():
 
         # ボールの速度・位置を計算
         ball_x, ball_y, ball_vx, ball_vy = calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y,wall_x,wall_y,wall_1,ball_1)
+        
+        #障害物の速度・位置を計算
+        #C0A21023 大家海世
         wall_x, wall_y, wall_vx, wall_vy = wall_mov(wall_x,wall_y,wall_vx,wall_vy)
         pygame.display.update()                                     # 画面を更新
 
