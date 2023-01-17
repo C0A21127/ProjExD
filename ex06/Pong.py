@@ -3,12 +3,14 @@
 import pygame
 from pygame.locals import *
 import sys
+import random
 
 # ボールの動きを計算
-
-def calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y,wall_x, wall_y, wall_1, ball_1):
+def calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y,wall_x,wall_y,wall_1,ball_1):
         global flag
-
+        #プレイヤーのバーにあたった時
+        # wall_rct=wall_1.get_rect()
+        # ball_rct=ball_1.get_rect()
         if ball_x <= bar1_x + 10.:
             if ball_y >= bar1_y - 7.5 and ball_y <= bar1_y + 42.5:
                 ball_x = 20.
@@ -18,18 +20,15 @@ def calc_ball(ball_x, ball_y, ball_vx, ball_vy, bar1_x, bar1_y, bar2_x, bar2_y,w
             if ball_y >= bar2_y - 7.5 and ball_y <= bar2_y + 42.5:
                 ball_x = 605.
                 ball_vx = -ball_vx
-
-
-         #障害物の右側にあたった時
-        
+        #障害物にあたった時
         if wall_1.colliderect(ball_1) and not flag:
             ball_vx=-ball_vx
             flag = True
         if not wall_1.colliderect(ball_1):
             flag = False
+
         
         #画面外に出たとき
-
         if ball_x < 5.:
             ball_x, ball_y = 320., 232.5
         elif ball_x > 620.:
@@ -68,14 +67,12 @@ def calc_player(bar1_y, bar1_dy):
 
 #障害物の動き
 def wall_mov(wall_x,wall_y,wall_vx,wall_vy):
-
     if wall_y <= 15.:
         wall_vy = -wall_vy
         wall_y = 15.
     elif wall_y >= 400.5:
         wall_vy = -wall_vy
         wall_y = 400.5
-
     return wall_x, wall_y, wall_vx, wall_vy
 
 # 得点の計算
@@ -84,21 +81,20 @@ def calc_score(ball_x, score1, score2, set1, set2, cir_lst, cir_xy, scr):
         score2 += 1
     if ball_x > 620.:
         score1 += 1
-    if score1 == max or score2 == max:
+    if score1 == 5 or score2 == 5:
         set1, set2 = change_color(score1, score2, set1, set2, cir_lst, cir_xy, scr)
         score1, score2 = 0, 0
     return score1, score2, set1, set2
     
-#セットの計算
-#望月
+
 def calc_set(score1, score2, set1, set2):
-    if score1 == 2:
+    if score1 == 5:
         score1 = 0
         score2 = 0
         set1 += 1
         if set1 == 3:
             sys.exit()
-    if score2 == 2:
+    if score2 == 5:
         score1 = 0
         score2 = 0
         set2 += 1
@@ -107,14 +103,14 @@ def calc_set(score1, score2, set1, set2):
     return score1, score2, set1, set2
 
 def change_color(score1, score2, set1, set2, cir_lst, cir_xy, scr):         #セット取得時の色変化
-    if score1 == max:
+    if score1 == 5:
         ct_sur = pygame.Surface((20,20))                                    
         pygame.draw.circle(ct_sur, (0, 0, 255), (10, 10), 4)                #プレイヤーの色を青に変化
         ct_sur.set_colorkey((0,0,0))
         cir_lst[set1] = ct_sur
         scr.blit(cir_lst[set1], cir_xy[set1])
         set1 += 1
-    if score2 == max:
+    if score2 == 5:
         ct_sur = pygame.Surface((20,20))
         pygame.draw.circle(ct_sur, (255, 0, 0), (10, 10), 4)                #AIの色を赤に変化
         ct_sur.set_colorkey((0,0,0))
@@ -148,26 +144,20 @@ def main():
     # 各パラメータ
     bar1_x, bar1_y = 10. , 215.
     bar2_x, bar2_y = 620., 215.
-
-    wall_x, wall_y = 325,215.
-
-  
+    wall_x,wall_y=325,215.
     ball_x, ball_y = 307.5, 232.5
     bar1_dy, bar2_dy = 0. , 0.
     ball_vx, ball_vy = 250., 250.
     wall_vx, wall_vy = 250., 250.
     score1, score2 = 0,0
     ball_r = 7
-
-    flag = False
-
     ct_cir_xy = [(256, 7),
                  (236, 7),
                  (387, 7),
                  (407, 7)
                  ]
     seta, setb = 0, len(ct_cir_xy) // 2
-
+    flag = False
 
     # pygameの設定
     pygame.init()                                       # Pygameの初期化
@@ -179,15 +169,13 @@ def main():
     # 背景の設定
     back = pygame.Surface((640,480))
     background = back.convert()
-    '''screen.fill((0,0,0))'''
 
     #背景色（ランダムに設定）
-    #森屋
+    #C0A21127 森屋 遥大
     color1 = random.randint(0,124)
     color2 = random.randint(0,124)
     color3 = random.randint(0,124)
     screen.fill((color1,color2,color3))
-    
 
     # ボールを打つバーの設定
     bar = pygame.Surface((10,50))
@@ -202,9 +190,6 @@ def main():
     ball = circ_sur
     ball.set_colorkey((0,0,0))
 
-
-    
-
     #セットカウント
     circle_lst = []
     circle_frame_lst = []
@@ -218,31 +203,26 @@ def main():
         circle = ct_sur
         circle.set_colorkey((0,0,0))
         circle_lst.append(circle)
-
     #障害物の設定
     wall_s = pygame.Surface((10,90))
     wall = wall_s.convert()
     wall.fill((255,255,255))
 
-
-
     while (1):
         # 各オブジェクトの描画
         scr=screen.blit(background,(0,0))
-        screen.fill((75,0,125))
+        screen.fill((color1,color2,color3))
         pygame.draw.aaline(screen,(255,255,255),(330,5),(330,475))  # 中央線の描画
         bar_1=screen.blit(bar1,(bar1_x,bar1_y))                           # プレイヤー側バーの描画
         bar_2=screen.blit(bar2,(bar2_x,bar2_y))                           # CPU側バーの描画
         wall_1=screen.blit(wall,(wall_x,wall_y))                                 #
         ball_1=screen.blit(ball,(ball_x, ball_y))                          # ボールの描画
-        screen.blit(font.render(str(score1), True,(255,255,255)),(250.,10.))
-        screen.blit(font.render(str(score2), True,(255,255,255)),(400.,10.))
 
         for i in range(4):                                          #セットカウントの表示
             screen.blit(circle_lst[i], ct_cir_xy[i])                #中身の描画
             screen.blit(circle_frame_lst[i], ct_cir_xy[i])          #枠の白丸の描画
-
-
+        screen.blit(font.render(str(score1), True,(255,255,255)),(250.,50.))
+        screen.blit(font.render(str(score2), True,(255,255,255)),(400.,50.))
 
         # プレイヤー側バーの位置
         bar1_dy = event(bar1_dy)
@@ -256,11 +236,9 @@ def main():
         wall_y += wall_vy * time_sec
 
         # 得点の計算
-        score1, score2 = calc_score(ball_x, score1, score2)
-        #スコアの計算
-        score1, score2, set1, set2 = calc_score(ball_x, score1, score2, seta, setb, circle_lst, ct_cir_xy, screen)
+        score1, score2, seta, setb = calc_score(ball_x, score1, score2, seta, setb, circle_lst, ct_cir_xy, screen)
         
-        score1, score2, set1, set2 = calc_set(score1, score2, set1, set2)
+        #score1, score2, set1, set2 = calc_set(score1, score2, set1, set2)
        
 
 
