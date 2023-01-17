@@ -85,7 +85,8 @@ def calc_score(ball_x, score1, score2, set1, set2, cir_lst, cir_xy, scr):
         score1, score2 = 0, 0
     return score1, score2, set1, set2
     
-
+#セットの計算
+#望月
 def calc_set(score1, score2, set1, set2):
     if score1 == 2:
         score1 = 0
@@ -167,6 +168,15 @@ def main():
     # 背景の設定
     back = pygame.Surface((640,480))
     background = back.convert()
+    '''screen.fill((0,0,0))'''
+
+    #背景色（ランダムに設定）
+    #森屋
+    color1 = random.randint(0,124)
+    color2 = random.randint(0,124)
+    color3 = random.randint(0,124)
+    screen.fill((color1,color2,color3))
+    
 
     # ボールを打つバーの設定
     bar = pygame.Surface((10,50))
@@ -228,6 +238,8 @@ def main():
         wall_y += wall_vy * time_sec
 
         # 得点の計算
+        score1, score2 = calc_score(ball_x, score1, score2)
+        #スコアの計算
         score1, score2, set1, set2 = calc_score(ball_x, score1, score2, seta, setb, circle_lst, ct_cir_xy, screen)
         
         score1, score2, set1, set2 = calc_set(score1, score2, set1, set2)
